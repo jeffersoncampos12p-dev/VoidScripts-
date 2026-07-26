@@ -1,1 +1,508 @@
-local function a()pcall(function()if syn and syn.protect_gui then syn.protect_gui(game:GetService("CoreGui"))elseif protectgui then protectgui(game:GetService("CoreGui"))end end)local b=getrawmetatable(game)local c=b.__index setreadonly(b,false)b.__index=newcclosure(function(d,e)if tostring(e)=="GetObjects"or tostring(e)=="HttpGet"then return nil end return c(d,e)end)setreadonly(b,true)end a()local e=game:GetService("Players")local f=game:GetService("RunService")local g=game:GetService("UserInputService")local h=game:GetService("TweenService")local i=workspace.CurrentCamera local j=e.LocalPlayer local k={Box=false,Tracer=false,Skeleton=false,HighlightMode="None",Aimbot=false,AimPart="Head",FOVRadius=100,MaxDistance=200,ShowFOV=false,AimSmoothness=0.2,HitboxExpander=false,HitboxSize=1.5,AnimationSpeed=0.2}local l={Accent=Color3.fromRGB(140,60,255),Bg=Color3.fromRGB(14,10,24),SideBg=Color3.fromRGB(18,14,28),CardBg=Color3.fromRGB(22,18,34),Text=Color3.fromRGB(245,245,250),SecondaryText=Color3.fromRGB(170,160,190),Scrollbar=Color3.fromRGB(140,60,255),Transparency=0.0,Mode="Dark"}local m={}local n={}local o={}local p={}local q={}local r={}local s={}local t local u={}local v={}pcall(function()t=Drawing.new("Circle")t.Visible=false t.Filled=false t.Thickness=1.5 t.Color=Color3.fromRGB(255,255,255)t.NumSides=64 end)local w={}local function x(y,z)for A,B in ipairs(z)do local C=y:FindFirstChild(B)if C then return C end end return nil end local D={{"Head",{"Head"}},{"UpperTorso",{"UpperTorso","Torso"}},{"LowerTorso",{"LowerTorso","Torso"}},{"LeftArm",{"LeftUpperArm","Left Arm"}},{"RightArm",{"RightUpperArm","Right Arm"}},{"LeftForearm",{"LeftLowerArm","Left Forearm"}},{"RightForearm",{"RightLowerArm","Right Forearm"}},{"LeftHand",{"LeftHand"}},{"RightHand",{"RightHand"}},{"LeftThigh",{"LeftUpperLeg","Left Leg"}},{"RightThigh",{"RightUpperLeg","Right Leg"}},{"LeftCalf",{"LeftLowerLeg","Left Calf"}},{"RightCalf",{"RightLowerLeg","Right Calf"}},{"LeftFoot",{"LeftFoot"}},{"RightFoot",{"RightFoot"}}}local E={{"Head","UpperTorso"},{"UpperTorso","LowerTorso"},{"LowerTorso","LeftThigh"},{"LowerTorso","RightThigh"},{"LeftThigh","LeftCalf"},{"LeftCalf","LeftFoot"},{"RightThigh","RightCalf"},{"RightCalf","RightFoot"},{"UpperTorso","LeftArm"},{"UpperTorso","RightArm"},{"LeftArm","LeftForearm"},{"LeftForearm","LeftHand"},{"RightArm","RightForearm"},{"RightForearm","RightHand"}}local function F(G,H,I)G=(G%1)*6 local J=math.floor(G)local K=G-J local L=I*(1-H)local M=I*(1-K*H)local N=I*(1-(1-K)*H)if J==0 then return Color3.new(I,N,L)elseif J==1 then return Color3.new(M,I,L)elseif J==2 then return Color3.new(L,I,N)elseif J==3 then return Color3.new(L,M,I)elseif J==4 then return Color3.new(N,L,I)else return Color3.new(I,L,M)end end local function O()if k.HighlightMode=="Red"then return Color3.fromRGB(255,0,0)elseif k.HighlightMode=="Rainbow"then return F(tick()*2%1,1,1)end return Color3.fromRGB(255,255,255)end local function P(Q)local R,S pcall(function()R=Drawing.new("Square")R.Visible=false R.Filled=false R.Thickness=1.5 end)pcall(function()S=Drawing.new("Line")S.Visible=false S.Thickness=1 end)if R and S then u[Q]={box=R,tracer=S}end end local function T(Q)local U=u[Q]if U then pcall(function()U.box:Remove()end)pcall(function()U.tracer:Remove()end)u[Q]=nil end local V=v[Q]if V then for W,X in ipairs(V)do pcall(function()X:Remove()end)end v[Q]=nil end end local function Y()local Z=O()local _=Vector2.new(i.ViewportSize.X/2,i.ViewportSize.Y)for a0,a1 in pairs(u)do local a2=a0.Character if a2 then local a3=a2:FindFirstChild("HumanoidRootPart")local a4=a2:FindFirstChild("Head")local a5=a2:FindFirstChild("Humanoid")if a3 and a4 and a5 and a5.Health>0 then local a6,a7=i:WorldToViewportPoint(a3.Position)local a8,a9=i:WorldToViewportPoint(a4.Position+Vector3.new(0,0.5,0))if a7 or a9 then if k.Box then local ba=math.abs(a8.Y-a6.Y)local bb=ba*0.65 a1.box.Visible=true a1.box.Position=Vector2.new(a6.X-bb/2,a6.Y)a1.box.Size=Vector2.new(bb,ba)a1.box.Color=Z else a1.box.Visible=false end if k.Tracer then a1.tracer.Visible=true a1.tracer.From=_ a1.tracer.To=Vector2.new(a6.X,a6.Y)a1.tracer.Color=Z else a1.tracer.Visible=false end end if k.Skeleton then if not v[a0]then v[a0]={}for bc=1,#E do local bd=Drawing.new("Line")bd.Visible=false bd.Thickness=1 bd.Color=Z table.insert(v[a0],bd)end end local be=v[a0]local bf={}for bg,bh in ipairs(D)do bf[bh[1]]=x(a2,bh[2])end for bi,bj in ipairs(E)do local bk=bf[bj[1]]local bl=bf[bj[2]]if bk and bl then local bm,bn=i:WorldToViewportPoint(bk.Position)local bo,bp=i:WorldToViewportPoint(bl.Position)if bn or bp then be[bi].Visible=true be[bi].From=Vector2.new(bm.X,bm.Y)be[bi].To=Vector2.new(bo.X,bo.Y)be[bi].Color=Z else be[bi].Visible=false end else be[bi].Visible=false end end else local bq=v[a0]if bq then for br,bs in ipairs(bq)do bs.Visible=false end end end else a1.box.Visible=false a1.tracer.Visible=false local bt=v[a0]if bt then for bu,bv in ipairs(bt)do bv.Visible=false end end end else a1.box.Visible=false a1.tracer.Visible=false local bw=v[a0]if bw then for bx,by in ipairs(bw)do by.Visible=false end end end end end local function bz()local bA=i.ViewportSize/2 local bB,bC=nil,k.FOVRadius for bD,bE in ipairs(e:GetPlayers())do if bE==j then continue end local bF=bE.Character if not bF then continue end local bG=nil if k.AimPart=="Head"then bG=bF:FindFirstChild("Head")elseif k.AimPart=="Torso"then bG=bF:FindFirstChild("UpperTorso")or bF:FindFirstChild("Torso")elseif k.AimPart=="HumanoidRootPart"then bG=bF:FindFirstChild("HumanoidRootPart")elseif k.AimPart=="Neck"then bG=bF:FindFirstChild("Neck")or bF:FindFirstChild("Head")end if not bG then continue end local bH=bF:FindFirstChild("Humanoid")if not bH or bH.Health<=0 then continue end local bI,bJ=i:WorldToViewportPoint(bG.Position)if not bJ then continue end local bK=(Vector2.new(bI.X,bI.Y)-bA).Magnitude if bK>k.FOVRadius then continue end local bL=(bG.Position-i.CFrame.Position).Magnitude if bL>k.MaxDistance then continue end if bK<bC then bC=bK bB=bE end end return bB end local function bM(bN)local bO=bN.Character if not bO then return end if k.AimPart=="Head"then return bO:FindFirstChild("Head")and bO.Head.Position elseif k.AimPart=="Torso"then local bP=bO:FindFirstChild("UpperTorso")or bO:FindFirstChild("Torso")return bP and bP.Position elseif k.AimPart=="HumanoidRootPart"then return bO:FindFirstChild("HumanoidRootPart")and bO.HumanoidRootPart.Position elseif k.AimPart=="Neck"then local bQ=bO:FindFirstChild("Neck")if bQ and bQ.Parent and bQ.Parent:FindFirstChild("Head")then return bQ.Parent.Head.Position+(bQ.Parent.Head.Position-bQ.Position).Unit*0.5 end return bO:FindFirstChild("Head")and bO.Head.Position end end local function bR()if not k.Aimbot then return end local bS=bz()if bS then local bT=bM(bS)if bT then i.CFrame=i.CFrame:Lerp(CFrame.new(i.CFrame.Position,bT),1-k.AimSmoothness)end end end local function bU()if not t then return end t.Visible=k.ShowFOV if k.ShowFOV then t.Position=i.ViewportSize/2 t.Radius=k.FOVRadius end end local function bV(bW,bX)if not bW then return end local bY=bW:FindFirstChild("Humanoid")if not bY or bY.Health<=0 then return end for bZ,c0 in ipairs(bW:GetDescendants())do if c0:IsA("BasePart")and c0.Name~="HumanoidRootPart"then if not w[c0]then w[c0]=c0.Size end c0.Size=w[c0]*bX end end end local function c1(bW)if not bW then return end for c2,c3 in ipairs(bW:GetDescendants())do if c3:IsA("BasePart")and w[c3]then c3.Size=w[c3]w[c3]=nil end end end local function c4()if k.HitboxExpander then for c5,c6 in ipairs(e:GetPlayers())do if c6~=j and c6.Character then bV(c6.Character,k.HitboxSize)end end else for c7,c8 in ipairs(e:GetPlayers())do if c8~=j and c8.Character then c1(c8.Character)end end end end for c9,da in ipairs(e:GetPlayers())do if da~=j then P(da)if k.HitboxExpander and da.Character then bV(da.Character,k.HitboxSize)end da.CharacterAdded:Connect(function(db)if k.HitboxExpander then bV(db,k.HitboxSize)end end)end end e.PlayerAdded:Connect(function(dc)if dc~=j then P(dc)if k.HitboxExpander and dc.Character then bV(dc.Character,k.HitboxSize)end dc.CharacterAdded:Connect(function(dd)if k.HitboxExpander then bV(dd,k.HitboxSize)end end)end end)e.PlayerRemoving:Connect(function(de)T(de)if de.Character then c1(de.Character)end end)f.RenderStepped:Connect(function()pcall(Y)pcall(bR)pcall(bU)end)local df=nil local dg=false pcall(function()df=loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/FeatherIcons.lua"))()if df then dg=true end end)local dh=Instance.new("ScreenGui")dh.Name="VoidScripts_"..math.random(10000,99999)dh.ResetOnSpawn=false dh.Parent=(game:GetService("CoreGui")or j:WaitForChild("PlayerGui"))pcall(function()dh.Enabled=false dh.Enabled=true end)local di=Instance.new("Frame")di.Size=UDim2.new(0,480,0,340)di.Position=UDim2.new(0.5,-240,0.5,-170)di.BackgroundColor3=l.Bg di.BorderSizePixel=0 di.ClipsDescendants=true di.Parent=dh pcall(function()local dj=Instance.new("UICorner")dj.CornerRadius=UDim.new(0,6)dj.Parent=di end)table.insert(m,{frame=di,type="Bg"})local dk=Instance.new("Frame")dk.Size=UDim2.new(1,4,1,4)dk.Position=UDim2.new(0,-2,0,-2)dk.BackgroundColor3=Color3.new(0,0,0)dk.BackgroundTransparency=0.65 dk.BorderSizePixel=0 dk.ZIndex=-1 dk.Parent=di pcall(function()local dl=Instance.new("UICorner")dl.CornerRadius=UDim.new(0,6)dl.Parent=dk end)local dm=Instance.new("Frame")dm.Size=UDim2.new(1,0,0,24)dm.BackgroundColor3=l.SideBg dm.BorderSizePixel=0 dm.Parent=di pcall(function()local dn=Instance.new("UICorner")dn.CornerRadius=UDim.new(0,6)dn.Parent=dm end)table.insert(m,{frame=dm,type="SideBg"})local do_=Instance.new("Frame")do_.Size=UDim2.new(0,22,0,22)do_.Position=UDim2.new(0,6,0.5,-11)do_.BackgroundTransparency=1 do_.Parent=dm local dp=Instance.new("ImageLabel")dp.Size=UDim2.new(1,0,1,0)dp.BackgroundTransparency=1 dp.Image="https://plain-enam-prod-public.komododecks.com/202607/23/Ss9QExlCzeFE2YDBIRUt/image.png"dp.Parent=do_ spawn(function()wait(1)if dp.Image==""then dp:Destroy()local dq=Instance.new("TextLabel")dq.Size=UDim2.new(1,0,1,0)dq.BackgroundTransparency=1 dq.Text="⬡"dq.TextColor3=l.Accent dq.Font=Enum.Font.GothamBold dq.TextSize=18 dq.TextXAlignment=Enum.TextXAlignment.Center dq.Parent=do_ end end)local dr=Instance.new("TextLabel")dr.Size=UDim2.new(0,100,1,0)dr.Position=UDim2.new(0,32,0,0)dr.BackgroundTransparency=1 dr.Text="VoidScripts"dr.TextColor3=l.Text dr.Font=Enum.Font.GothamBlack dr.TextSize=12 dr.TextXAlignment=Enum.TextXAlignment.Left dr.Parent=dm table.insert(p,dr)local ds=Instance.new("TextButton")ds.Size=UDim2.new(0,22,0,22)ds.Position=UDim2.new(1,-44,0,1)ds.BackgroundColor3=Color3.fromRGB(45,45,45)ds.Text="—"ds.TextColor3=Color3.new(1,1,1)ds.Font=Enum.Font.GothamBold ds.TextSize=12 ds.BorderSizePixel=0 ds.Parent=dm pcall(function()local dt=Instance.new("UICorner")dt.CornerRadius=UDim.new(0,3)dt.Parent=ds end)local du=Instance.new("TextButton")du.Size=UDim2.new(0,22,0,22)du.Position=UDim2.new(1,-22,0,1)du.BackgroundColor3=Color3.fromRGB(255,65,65)du.Text="✕"du.TextColor3=Color3.new(1,1,1)du.Font=Enum.Font.GothamBold du.TextSize=12 du.BorderSizePixel=0 du.Parent=dm pcall(function()local dv=Instance.new("UICorner")dv.CornerRadius=UDim.new(0,3)dv.Parent=du end)local dw=false local dx ds.MouseButton1Click:Connect(function()dw=not dw if dw then dx.Visible=false di.Size=UDim2.new(0,480,0,28)ds.Text="+"else dx.Visible=true di.Size=UDim2.new(0,480,0,340)ds.Text="—"end end)du.MouseButton1Click:Connect(function()k.Box=false k.Tracer=false k.Skeleton=false k.HighlightMode="None"k.Aimbot=false k.ShowFOV=false k.HitboxExpander=false c4()for dy,dz in pairs(u)do pcall(function()dz.box:Remove()end)pcall(function()dz.tracer:Remove()end)end for dA,dB in pairs(v)do for dC,dD in ipairs(dB)do pcall(function()dD:Remove()end)end end u={}v={}pcall(function()t:Remove()end)dh:Destroy()end)dx=Instance.new("Frame")dx.Size=UDim2.new(1,0,1,-24)dx.Position=UDim2.new(0,0,0,24)dx.BackgroundTransparency=1 dx.BorderSizePixel=0 dx.Parent=di local dE=Instance.new("Frame")dE.Size=UDim2.new(0,100,1,0)dE.BackgroundColor3=l.SideBg dE.BorderSizePixel=0 dE.Parent=dx pcall(function()local dF=Instance.new("UICorner")dF.CornerRadius=UDim.new(0,6)dF.Parent=dE end)table.insert(m,{frame=dE,type="SideBg"})local dG=Instance.new("Frame")dG.Size=UDim2.new(1,-100,1,0)dG.Position=UDim2.new(0,100,0,0)dG.BackgroundColor3=l.Bg dG.BorderSizePixel=0 dG.ClipsDescendants=true dG.Parent=dx table.insert(m,{frame=dG,type="Bg"})local dH={}local dI={}local dJ=1 local dK={{name="ESP",icon="circle"},{name="Aimbot",icon="target"},{name="Hitbox",icon="box"},{name="Tema",icon="sliders"},{name="Créditos",icon="info"},{name="Logs",icon="list"}}local function dL()local dM=Instance.new("Frame")dM.Size=UDim2.new(1,0,1,0)dM.BackgroundTransparency=1 dM.BorderSizePixel=0 dM.Visible=false dM.Parent=dG local dN=Instance.new("ScrollingFrame")dN.Size=UDim2.new(1,-8,1,-8)dN.Position=UDim2.new(0,4,0,4)dN.BackgroundTransparency=1 dN.BorderSizePixel=0 dN.ScrollBarThickness=2 dN.ScrollBarImageColor3=l.Accent dN.CanvasSize=UDim2.new(0,0,0,0)dN.ClipsDescendants=true dN.Parent=dM table.insert(n,dN)local dO=Instance.new("Frame")dO.Size=UDim2.new(1,0,0,0)dO.BackgroundTransparency=1 dO.Parent=dN return dM,dN,dO end local function dP(dQ)if dI[dJ]then dI[dJ].Visible=false end dI[dQ].Visible=true dJ=dQ for dR,dS in ipairs(dH)do local dT=(dR==dQ)dS.button.BackgroundColor3=dT and l.Accent or l.SideBg dS.text.TextColor3=dT and Color3.new(1,1,1)or l.SecondaryText if dS.icon then dS.icon.ImageColor3=dT and Color3.new(1,1,1)or l.SecondaryText end end end for dU,dV in ipairs(dK)do local dW=Instance.new("TextButton")dW.Size=UDim2.new(1,-6,0,26)dW.Position=UDim2.new(0,3,0,6+(dU-1)*28)dW.BackgroundColor3=(dU==1)and l.Accent or l.SideBg dW.BorderSizePixel=0 dW.Text=""dW.Parent=dE pcall(function()local dX=Instance.new("UICorner")dX.CornerRadius=UDim.new(0,4)dX.Parent=dW end)table.insert(m,{frame=dW,type="SideBg"})local dY if dg then dY=df:Create(dV.icon)dY.Size=UDim2.new(0,16,0,16)dY.BackgroundTransparency=1 dY.ImageColor3=(dU==1)and Color3.new(1,1,1)or l.SecondaryText dY.Parent=dW dY.LayoutOrder=0 else local dZ={circle="○",target="◎",box="⬡",sliders="◐",info="ℹ",list="≡"}dY=Instance.new("TextLabel")dY.Size=UDim2.new(0,16,0,16)dY.BackgroundTransparency=1 dY.Text=dZ[dV.icon]or"●"dY.TextColor3=(dU==1)and Color3.new(1,1,1)or l.SecondaryText dY.Font=Enum.Font.GothamBold dY.TextSize=14 dY.TextXAlignment=Enum.TextXAlignment.Center dY.Parent=dW dY.LayoutOrder=0 end local d_=Instance.new("TextLabel")d_.Size=UDim2.new(1,-24,1,0)d_.BackgroundTransparency=1 d_.Text=dV.name d_.TextColor3=(dU==1)and Color3.new(1,1,1)or l.SecondaryText d_.Font=Enum.Font.GothamMedium d_.TextSize=11 d_.TextXAlignment=Enum.TextXAlignment.Left d_.Parent=dW d_.LayoutOrder=1 table.insert(q,d_)local e0=Instance.new("UIListLayout")e0.FillDirection=Enum.FillDirection.Horizontal e0.SortOrder=Enum.SortOrder.LayoutOrder e0.Padding=UDim.new(0,6)e0.VerticalAlignment=Enum.VerticalAlignment.Center e0.HorizontalAlignment=Enum.HorizontalAlignment.Left e0.Parent=dW table.insert(dH,{button=dW,text=d_,icon=dY})local e1,e2,e3=dL()table.insert(dI,e1)dV.sf=e2 dV.inner=e3 dW.MouseButton1Click:Connect(function()dP(dU)end)end dI[1].Visible=true local function e4(e5,e6,e7,e8)local e9=Instance.new("Frame")e9.Size=UDim2.new(1,0,0,26)e9.Position=UDim2.new(0,0,0,e6)e9.BackgroundTransparency=1 e9.Parent=e5 local fa=Instance.new("TextLabel")fa.Size=UDim2.new(0.7,0,1,0)fa.BackgroundTransparency=1 fa.Text=e7 fa.TextColor3=l.Text fa.Font=Enum.Font.Gotham fa.TextSize=12 fa.TextXAlignment=Enum.TextXAlignment.Left fa.Parent=e9 table.insert(p,fa)local fb=Instance.new("Frame")fb.Size=UDim2.new(0,30,0,14)fb.Position=UDim2.new(1,-30,0.5,-7)fb.BackgroundColor3=Color3.fromRGB(60,60,60)fb.BorderSizePixel=0 fb.Parent=e9 pcall(function()local fc=Instance.new("UICorner")fc.CornerRadius=UDim.new(1,0)fc.Parent=fb end)local fd=Instance.new("Frame")fd.Size=UDim2.new(0,10,0,10)fd.Position=UDim2.new(0,2,0.5,-5)fd.BackgroundColor3=Color3.fromRGB(200,200,200)fd.BorderSizePixel=0 fd.Parent=fb pcall(function()local fe=Instance.new("UICorner")fe.CornerRadius=UDim.new(1,0)fe.Parent=fd end)local ff=Instance.new("TextButton")ff.Size=UDim2.new(1,0,1,0)ff.BackgroundTransparency=1 ff.Text=""ff.Parent=e9 local fg=false local function fh(fi,fj)fg=fi local fk=fg and UDim2.new(1,-12,0.5,-5)or UDim2.new(0,2,0.5,-5)local fl=fg and l.Accent or Color3.fromRGB(60,60,60)local fm=TweenInfo.new(fj and 0 or k.AnimationSpeed,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)h:Create(fd,fm,{Position=fk}):Play()h:Create(fb,fm,{BackgroundColor3=fl}):Play()e8(fg)end ff.MouseButton1Click:Connect(function()fh(not fg,false)end)table.insert(s,function()fb.BackgroundColor3=fg and l.Accent or Color3.fromRGB(60,60,60)end)return fh end local function fn(e5,e6,e7,fo,fp,fq,fr)local fs=Instance.new("Frame")fs.Size=UDim2.new(1,0,0,40)fs.Position=UDim2.new(0,0,0,e6)fs.BackgroundTransparency=1 fs.Parent=e5 local ft=Instance.new("TextLabel")ft.Size=UDim2.new(0.5,0,0,12)ft.BackgroundTransparency=1 ft.Text=e7 ft.TextColor3=l.Text ft.Font=Enum.Font.Gotham ft.TextSize=11 ft.TextXAlignment=Enum.TextXAlignment.Left ft.Parent=fs table.insert(p,ft)local fu=Instance.new("TextLabel")fu.Size=UDim2.new(0.5,0,0,12)fu.Position=UDim2.new(0.5,0,0,0)fu.BackgroundTransparency=1 fu.Text=tostring(fq)fu.TextColor3=l.Accent fu.Font=Enum.Font.GothamBold fu.TextSize=11 fu.TextXAlignment=Enum.TextXAlignment.Right fu.Parent=fs table.insert(o,fu)local fv=Instance.new("TextButton")fv.Size=UDim2.new(1,0,0,4)fv.Position=UDim2.new(0,0,0,20)fv.BackgroundColor3=Color3.fromRGB(50,50,50)fv.BorderSizePixel=0 fv.Text=""fv.AutoButtonColor=false fv.Parent=fs pcall(function()local fw=Instance.new("UICorner")fw.CornerRadius=UDim.new(0,2)fw.Parent=fv end)local fx=Instance.new("Frame")fx.Size=UDim2.new((fq-fo)/(fp-fo),0,1,0)fx.BackgroundColor3=l.Accent fx.BorderSizePixel=0 fx.Parent=fv pcall(function()local fy=Instance.new("UICorner")fy.CornerRadius=UDim.new(0,2)fy.Parent=fx end)table.insert(n,fx)local fz=Instance.new("Frame")fz.Size=UDim2.new(0,12,0,12)fz.Position=UDim2.new((fq-fo)/(fp-fo),-6,0.5,-6)fz.BackgroundColor3=Color3.fromRGB(255,255,255)fz.BorderSizePixel=0 fz.ZIndex=2 fz.Parent=fv pcall(function()local fA=Instance.new("UICorner")fA.CornerRadius=UDim.new(0,2)fA.Parent=fz end)local function fB(fC)local fD=fv.AbsolutePosition local fE=fv.AbsoluteSize.X local fF=math.clamp((fC.X-fD.X)/fE,0,1)local fG=math.floor(fo+(fp-fo)*fF+0.5)fz.Position=UDim2.new(fF,-6,0.5,-6)fx.Size=UDim2.new(fF,0,1,0)fu.Text=tostring(fG)fr(fG)end local fH=false fv.MouseButton1Down:Connect(function()fH=true fB(g:GetMouseLocation())end)fz.InputBegan:Connect(function(fI)if fI.UserInputType==Enum.UserInputType.MouseButton1 then fH=true end end)g.InputEnded:Connect(function(fJ)if fJ.UserInputType==Enum.UserInputType.MouseButton1 then fH=false end end)g.InputChanged:Connect(function(fK)if fH and fK.UserInputType==Enum.UserInputType.MouseMovement then fB(fK.Position)end end)fr(fq)table.insert(s,function()fx.BackgroundColor3=l.Accent fu.TextColor3=l.Accent end)return function()end end local function fL(e5,e6,fM)local fN={"Head","Torso","HumanoidRootPart","Neck"}local fO=1 local fP=Instance.new("TextButton")fP.Size=UDim2.new(1,0,0,24)fP.Position=UDim2.new(0,0,0,e6)fP.BackgroundColor3=l.CardBg fP.Text="◎ Parte: Head"fP.TextColor3=l.Text fP.Font=Enum.Font.Gotham fP.TextSize=11 fP.BorderSizePixel=0 fP.Parent=e5 pcall(function()local fQ=Instance.new("UICorner")fQ.CornerRadius=UDim.new(0,4)fQ.Parent=fP end)table.insert(m,{frame=fP,type="CardBg"})table.insert(p,fP)fP.MouseButton1Click:Connect(function()fO=fO%#fN+1 local fR=fN[fO]fP.Text="◎ Parte: "..fR fM(fR)end)fM("Head")end local function fS(e5,e6)local fT=Instance.new("TextLabel")fT.Size=UDim2.new(1,0,0,14)fT.Position=UDim2.new(0,0,0,e6)fT.BackgroundTransparency=1 fT.Text="○ Highlight"fT.TextColor3=l.SecondaryText fT.Font=Enum.Font.GothamBold fT.TextSize=11 fT.TextXAlignment=Enum.TextXAlignment.Left fT.Parent=e5 tabl
+--[[
+    VoidScripts Universal v5.1 (FINAL ESTÁVEL)
+    ESP (Box, Tracer, Skeleton) • Aimbot • Hitbox • Antiban
+    Temas • Créditos • Logs • Transparência
+]]--
+
+-- ============== PROTEÇÃO ANTIBAN ==============
+local function antiBan()
+    pcall(function()
+        if syn and syn.protect_gui then
+            syn.protect_gui(game:GetService("CoreGui"))
+        elseif protectgui then
+            protectgui(game:GetService("CoreGui"))
+        end
+    end)
+    local mt = getrawmetatable(game)
+    local old = mt.__index
+    setreadonly(mt, false)
+    mt.__index = newcclosure(function(t, k)
+        if tostring(k) == "GetObjects" or tostring(k) == "HttpGet" then return nil end
+        return old(t, k)
+    end)
+    setreadonly(mt, true)
+end
+antiBan()
+
+-- Serviços
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+-- Configurações
+local Settings = {
+    Box = false,
+    Tracer = false,
+    Skeleton = false,
+    HighlightMode = "None",
+    Aimbot = false,
+    AimPart = "Head",
+    FOVRadius = 100,
+    MaxDistance = 200,
+    ShowFOV = false,
+    AimSmoothness = 0.2,
+    HitboxExpander = false,
+    HitboxSize = 1.5,
+    AnimationSpeed = 0.2
+}
+
+-- Tema dinâmico (Dark Purple)
+local Theme = {
+    Accent = Color3.fromRGB(140, 60, 255),
+    Bg = Color3.fromRGB(14, 10, 24),
+    SideBg = Color3.fromRGB(18, 14, 28),
+    CardBg = Color3.fromRGB(22, 18, 34),
+    Text = Color3.fromRGB(245, 245, 250),
+    SecondaryText = Color3.fromRGB(170, 160, 190),
+    Scrollbar = Color3.fromRGB(140, 60, 255),
+    Transparency = 0.0,
+    Mode = "Dark"
+}
+
+-- Tabelas de atualização de tema
+local bgFrames = {}
+local accentFrames = {}
+local accentTexts = {}
+local textLabels = {}
+local secTextLabels = {}
+local themeUpdaters = {}
+
+-- Desenhos ESP
+local playerDrawings = {}
+local playerSkeletonLines = {}
+local fovCircle
+pcall(function()
+    fovCircle = Drawing.new("Circle")
+    fovCircle.Visible = false
+    fovCircle.Filled = false
+    fovCircle.Thickness = 1.5
+    fovCircle.Color = Color3.fromRGB(255, 255, 255)
+    fovCircle.NumSides = 64
+end)
+local originalSizes = {}
+
+-- Mapeamento de partes do esqueleto (R6/R15)
+local function getPart(char, names)
+    for _, n in ipairs(names) do
+        local p = char:FindFirstChild(n)
+        if p then return p end
+    end
+    return nil
+end
+
+local skeletonBones = {
+    {"Head", {"Head"}},
+    {"UpperTorso", {"UpperTorso", "Torso"}},
+    {"LowerTorso", {"LowerTorso", "Torso"}},
+    {"LeftArm", {"LeftUpperArm", "Left Arm"}},
+    {"RightArm", {"RightUpperArm", "Right Arm"}},
+    {"LeftForearm", {"LeftLowerArm", "Left Forearm"}},
+    {"RightForearm", {"RightLowerArm", "Right Forearm"}},
+    {"LeftHand", {"LeftHand"}},
+    {"RightHand", {"RightHand"}},
+    {"LeftThigh", {"LeftUpperLeg", "Left Leg"}},
+    {"RightThigh", {"RightUpperLeg", "Right Leg"}},
+    {"LeftCalf", {"LeftLowerLeg", "Left Calf"}},
+    {"RightCalf", {"RightLowerLeg", "Right Calf"}},
+    {"LeftFoot", {"LeftFoot"}},
+    {"RightFoot", {"RightFoot"}},
+}
+
+local skeletonConnections = {
+    {"Head", "UpperTorso"},
+    {"UpperTorso", "LowerTorso"},
+    {"LowerTorso", "LeftThigh"},
+    {"LowerTorso", "RightThigh"},
+    {"LeftThigh", "LeftCalf"},
+    {"LeftCalf", "LeftFoot"},
+    {"RightThigh", "RightCalf"},
+    {"RightCalf", "RightFoot"},
+    {"UpperTorso", "LeftArm"},
+    {"UpperTorso", "RightArm"},
+    {"LeftArm", "LeftForearm"},
+    {"LeftForearm", "LeftHand"},
+    {"RightArm", "RightForearm"},
+    {"RightForearm", "RightHand"},
+}
+
+-- Utilitário HSV
+local function HSVtoRGB(h, s, v)
+    h = (h % 1) * 6
+    local i = math.floor(h)
+    local f = h - i
+    local p = v * (1 - s)
+    local q = v * (1 - f * s)
+    local t = v * (1 - (1 - f) * s)
+    if i == 0 then return Color3.new(v, t, p)
+    elseif i == 1 then return Color3.new(q, v, p)
+    elseif i == 2 then return Color3.new(p, v, t)
+    elseif i == 3 then return Color3.new(p, q, v)
+    elseif i == 4 then return Color3.new(t, p, v)
+    else return Color3.new(v, p, q) end
+end
+
+local function getActiveColor()
+    if Settings.HighlightMode == "Red" then return Color3.fromRGB(255,0,0)
+    elseif Settings.HighlightMode == "Rainbow" then return HSVtoRGB(tick()*2%1,1,1)
+    end
+    return Color3.fromRGB(255,255,255)
+end
+
+-- ESP
+local function createDrawings(p)
+    local box, tracer
+    pcall(function() box = Drawing.new("Square"); box.Visible=false; box.Filled=false; box.Thickness=1.5 end)
+    pcall(function() tracer = Drawing.new("Line"); tracer.Visible=false; tracer.Thickness=1 end)
+    if box and tracer then playerDrawings[p] = {box=box, tracer=tracer} end
+end
+
+local function removeDrawings(p)
+    local d = playerDrawings[p]
+    if d then pcall(function() d.box:Remove() end) pcall(function() d.tracer:Remove() end) playerDrawings[p]=nil end
+    local lines = playerSkeletonLines[p]
+    if lines then
+        for _, line in ipairs(lines) do pcall(function() line:Remove() end) end
+        playerSkeletonLines[p] = nil
+    end
+end
+
+local function updateESP()
+    local color = getActiveColor()
+    local start = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+    for p, d in pairs(playerDrawings) do
+        local char = p.Character
+        if char then
+            local root = char:FindFirstChild("HumanoidRootPart")
+            local head = char:FindFirstChild("Head")
+            local hum = char:FindFirstChild("Humanoid")
+            if root and head and hum and hum.Health>0 then
+                local rp, rv = Camera:WorldToViewportPoint(root.Position)
+                local hp, hv = Camera:WorldToViewportPoint(head.Position + Vector3.new(0,0.5,0))
+                if rv or hv then
+                    if Settings.Box then
+                        local h = math.abs(hp.Y - rp.Y)
+                        local w = h*0.65
+                        d.box.Visible = true
+                        d.box.Position = Vector2.new(rp.X - w/2, rp.Y)
+                        d.box.Size = Vector2.new(w,h)
+                        d.box.Color = color
+                    else d.box.Visible = false end
+                    if Settings.Tracer then
+                        d.tracer.Visible = true
+                        d.tracer.From = start
+                        d.tracer.To = Vector2.new(rp.X, rp.Y)
+                        d.tracer.Color = color
+                    else d.tracer.Visible = false end
+                end
+
+                -- Skeleton ESP
+                if Settings.Skeleton then
+                    if not playerSkeletonLines[p] then
+                        playerSkeletonLines[p] = {}
+                        for i = 1, #skeletonConnections do
+                            local line = Drawing.new("Line")
+                            line.Visible = false
+                            line.Thickness = 1
+                            line.Color = color
+                            table.insert(playerSkeletonLines[p], line)
+                        end
+                    end
+                    local lines = playerSkeletonLines[p]
+                    local foundParts = {}
+                    for _, bone in ipairs(skeletonBones) do
+                        foundParts[bone[1]] = getPart(char, bone[2])
+                    end
+                    for i, conn in ipairs(skeletonConnections) do
+                        local partA = foundParts[conn[1]]
+                        local partB = foundParts[conn[2]]
+                        if partA and partB then
+                            local posA, onA = Camera:WorldToViewportPoint(partA.Position)
+                            local posB, onB = Camera:WorldToViewportPoint(partB.Position)
+                            if onA or onB then
+                                lines[i].Visible = true
+                                lines[i].From = Vector2.new(posA.X, posA.Y)
+                                lines[i].To = Vector2.new(posB.X, posB.Y)
+                                lines[i].Color = color
+                            else lines[i].Visible = false end
+                        else lines[i].Visible = false end
+                    end
+                else
+                    local lines = playerSkeletonLines[p]
+                    if lines then for _, line in ipairs(lines) do line.Visible = false end end
+                end
+            else
+                d.box.Visible = false; d.tracer.Visible = false
+                local lines = playerSkeletonLines[p]
+                if lines then for _, line in ipairs(lines) do line.Visible = false end end
+            end
+        else
+            d.box.Visible = false; d.tracer.Visible = false
+            local lines = playerSkeletonLines[p]
+            if lines then for _, line in ipairs(lines) do line.Visible = false end end
+        end
+    end
+end
+
+-- Aimbot
+local function findBestTarget()
+    local center = Camera.ViewportSize/2
+    local best, bestDist = nil, Settings.FOVRadius
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p == LocalPlayer then continue end
+        local char = p.Character
+        if not char then continue end
+        local part = nil
+        if Settings.AimPart=="Head" then part=char:FindFirstChild("Head")
+        elseif Settings.AimPart=="Torso" then part=char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso")
+        elseif Settings.AimPart=="HumanoidRootPart" then part=char:FindFirstChild("HumanoidRootPart")
+        elseif Settings.AimPart=="Neck" then part=char:FindFirstChild("Neck") or char:FindFirstChild("Head")
+        end
+        if not part then continue end
+        local hum = char:FindFirstChild("Humanoid")
+        if not hum or hum.Health<=0 then continue end
+        local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
+        if not onScreen then continue end
+        local d2 = (Vector2.new(sp.X, sp.Y)-center).Magnitude
+        if d2 > Settings.FOVRadius then continue end
+        local d3 = (part.Position - Camera.CFrame.Position).Magnitude
+        if d3 > Settings.MaxDistance then continue end
+        if d2 < bestDist then bestDist=d2; best=p end
+    end
+    return best
+end
+local function getAimPos(p)
+    local char = p.Character if not char then return end
+    if Settings.AimPart=="Head" then return char:FindFirstChild("Head") and char.Head.Position
+    elseif Settings.AimPart=="Torso" then
+        local t = char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso") return t and t.Position
+    elseif Settings.AimPart=="HumanoidRootPart" then return char:FindFirstChild("HumanoidRootPart") and char.HumanoidRootPart.Position
+    elseif Settings.AimPart=="Neck" then
+        local neck = char:FindFirstChild("Neck")
+        if neck and neck.Parent and neck.Parent:FindFirstChild("Head") then
+            return neck.Parent.Head.Position + (neck.Parent.Head.Position - neck.Position).Unit*0.5
+        end
+        return char:FindFirstChild("Head") and char.Head.Position
+    end
+end
+local function updateAimbot()
+    if not Settings.Aimbot then return end
+    local t = findBestTarget()
+    if t then
+        local pos = getAimPos(t)
+        if pos then
+            Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, pos), 1 - Settings.AimSmoothness)
+        end
+    end
+end
+local function updateFOV()
+    if not fovCircle then return end
+    fovCircle.Visible = Settings.ShowFOV
+    if Settings.ShowFOV then
+        fovCircle.Position = Camera.ViewportSize/2
+        fovCircle.Radius = Settings.FOVRadius
+    end
+end
+
+-- Hitbox
+local function applyHitbox(char, mul)
+    if not char then return end
+    local hum = char:FindFirstChild("Humanoid") if not hum or hum.Health<=0 then return end
+    for _, p in ipairs(char:GetDescendants()) do
+        if p:IsA("BasePart") and p.Name~="HumanoidRootPart" then
+            if not originalSizes[p] then originalSizes[p] = p.Size end
+            p.Size = originalSizes[p] * mul
+        end
+    end
+end
+local function restoreHitbox(char)
+    if not char then return end
+    for _, p in ipairs(char:GetDescendants()) do
+        if p:IsA("BasePart") and originalSizes[p] then
+            p.Size = originalSizes[p]; originalSizes[p]=nil
+        end
+    end
+end
+local function refreshHitboxes()
+    if Settings.HitboxExpander then
+        for _,p in ipairs(Players:GetPlayers()) do
+            if p~=LocalPlayer and p.Character then applyHitbox(p.Character, Settings.HitboxSize) end
+        end
+    else
+        for _,p in ipairs(Players:GetPlayers()) do
+            if p~=LocalPlayer and p.Character then restoreHitbox(p.Character) end
+        end
+    end
+end
+
+-- Conexões de jogadores
+for _,p in ipairs(Players:GetPlayers()) do
+    if p~=LocalPlayer then
+        createDrawings(p)
+        if Settings.HitboxExpander and p.Character then applyHitbox(p.Character, Settings.HitboxSize) end
+        p.CharacterAdded:Connect(function(c) if Settings.HitboxExpander then applyHitbox(c, Settings.HitboxSize) end end)
+    end
+end
+Players.PlayerAdded:Connect(function(p)
+    if p~=LocalPlayer then
+        createDrawings(p)
+        if Settings.HitboxExpander and p.Character then applyHitbox(p.Character, Settings.HitboxSize) end
+        p.CharacterAdded:Connect(function(c) if Settings.HitboxExpander then applyHitbox(c, Settings.HitboxSize) end end)
+    end
+end)
+Players.PlayerRemoving:Connect(function(p)
+    removeDrawings(p)
+    if p.Character then restoreHitbox(p.Character) end
+end)
+
+RunService.RenderStepped:Connect(function()
+    pcall(updateESP); pcall(updateAimbot); pcall(updateFOV)
+end)
+
+-- ============== FEATHER ICONS ==============
+local FeatherIcons = nil
+local useFeather = false
+pcall(function()
+    FeatherIcons = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/FeatherIcons.lua"))()
+    if FeatherIcons then useFeather = true end
+end)
+
+-- ============== INTERFACE GRÁFICA ==============
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "VoidScripts_"..math.random(10000,99999)
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = (game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui"))
+pcall(function() ScreenGui.Enabled=false; ScreenGui.Enabled=true end)
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0, 480, 0, 340)
+Main.Position = UDim2.new(0.5, -240, 0.5, -170)
+Main.BackgroundColor3 = Theme.Bg
+Main.BorderSizePixel = 0
+Main.ClipsDescendants = true
+Main.Parent = ScreenGui
+pcall(function() local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,6); c.Parent=Main end)
+table.insert(bgFrames, {frame=Main, type="Bg"})
+
+local Shadow = Instance.new("Frame")
+Shadow.Size = UDim2.new(1,4,1,4); Shadow.Position = UDim2.new(0,-2,0,-2)
+Shadow.BackgroundColor3 = Color3.new(0,0,0); Shadow.BackgroundTransparency=0.65; Shadow.BorderSizePixel=0; Shadow.ZIndex=-1
+Shadow.Parent = Main
+pcall(function() local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,6); c.Parent=Shadow end)
+
+-- TopBar
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1,0,0,24)
+TopBar.BackgroundColor3 = Theme.SideBg
+TopBar.BorderSizePixel = 0
+TopBar.Parent = Main
+pcall(function() local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,6); c.Parent=TopBar end)
+table.insert(bgFrames, {frame=TopBar, type="SideBg"})
+
+local LogoContainer = Instance.new("Frame")
+LogoContainer.Size = UDim2.new(0, 22, 0, 22)
+LogoContainer.Position = UDim2.new(0, 6, 0.5, -11)
+LogoContainer.BackgroundTransparency = 1
+LogoContainer.Parent = TopBar
+
+local LogoImage = Instance.new("ImageLabel")
+LogoImage.Size = UDim2.new(1, 0, 1, 0)
+LogoImage.BackgroundTransparency = 1
+LogoImage.Image = "https://plain-enam-prod-public.komododecks.com/202607/23/Ss9QExlCzeFE2YDBIRUt/image.png"
+LogoImage.Parent = LogoContainer
+
+spawn(function()
+    wait(1)
+    if LogoImage.Image == "" then
+        LogoImage:Destroy()
+        local fb = Instance.new("TextLabel")
+        fb.Size = UDim2.new(1,0,1,0); fb.BackgroundTransparency=1
+        fb.Text = "⬡"; fb.TextColor3 = Theme.Accent; fb.Font = Enum.Font.GothamBold
+        fb.TextSize = 18; fb.TextXAlignment = Enum.TextXAlignment.Center; fb.Parent = LogoContainer
+    end
+end)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0, 100, 1, 0); Title.Position = UDim2.new(0, 32, 0, 0)
+Title.BackgroundTransparency = 1; Title.Text = "VoidScripts"; Title.TextColor3 = Theme.Text
+Title.Font = Enum.Font.GothamBlack; Title.TextSize = 12; Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
+table.insert(textLabels, Title)
+
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0,22,0,22); MinimizeBtn.Position = UDim2.new(1,-44,0,1)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(45,45,45); MinimizeBtn.Text="—"
+MinimizeBtn.TextColor3=Color3.new(1,1,1); MinimizeBtn.Font=Enum.Font.GothamBold; MinimizeBtn.TextSize=12
+MinimizeBtn.BorderSizePixel=0; MinimizeBtn.Parent=TopBar
+pcall(function() local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,3); c.Parent=MinimizeBtn end)
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0,22,0,22); CloseBtn.Position = UDim2.new(1,-22,0,1)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255,65,65); CloseBtn.Text="✕"
+CloseBtn.TextColor3=Color3.new(1,1,1); CloseBtn.Font=Enum.Font.GothamBold; CloseBtn.TextSize=12
+CloseBtn.BorderSizePixel=0; CloseBtn.Parent=TopBar
+pcall(function() local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,3); c.Parent=CloseBtn end)
+
+local minimized = false
+local contentContainer
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        contentContainer.Visible = false
+        Main.Size = UDim2.new(0, 480, 0, 28)
+        MinimizeBtn.Text = "+"
+    else
+        contentContainer.Visible = true
+        Main.Size = UDim2.new(0, 480, 0, 340)
+        MinimizeBtn.Text = "—"
+    end
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    Settings.Box=false; Settings.Tracer=false; Settings.Skeleton=false; Settings.HighlightMode="None"
+    Settings.Aimbot=false; Settings.ShowFOV=false; Settings.HitboxExpander=false; refreshHitboxes()
+    for _,d in pairs(playerDrawings) do pcall(function() d.box:Remove() end) pcall(function() d.tracer:Remove() end) end
+    for _, lines in pairs(playerSkeletonLines) do for _,l in ipairs(lines) do pcall(function() l:Remove() end) end end
+    playerDrawings={}; playerSkeletonLines={}; pcall(function() fovCircle:Remove() end); ScreenGui:Destroy()
+end)
+
+contentContainer = Instance.new("Frame")
+contentContainer.Size = UDim2.new(1,0,1,-24); contentContainer.Position = UDim2.new(0,0,0,24)
+contentContainer.BackgroundTransparency = 1; contentContainer.BorderSizePixel = 0
+contentContainer.Parent = Main
+
+-- Sidebar
+local SidePanel = Instance.new("Frame")
+SidePanel.Size = UDim2.new(0, 100, 1,0); SidePanel.BackgroundColor3 = Theme.SideBg; SidePanel.BorderSizePixel = 0
+SidePanel.Parent = contentContainer
+pcall(function() local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,6); c.Parent=SidePanel end)
+table.insert(bgFrames, {frame=SidePanel, type="SideBg"})
+
+-- Content area
+local ContentArea = Instance.new("Frame")
+ContentArea.Size = UDim2.new(1,-100,1,0); ContentArea.Position = UDim2.new(0,100,0,0)
+ContentArea.BackgroundColor3 = Theme.Bg; ContentArea.BorderSizePixel = 0; ContentArea.ClipsDescendants = true
+ContentArea.Parent = contentContainer
+table.insert(bgFrames, {frame=ContentArea, type="Bg"})
+
+-- ============== ABAS ==============
+local tabButtons = {}
+local tabPages = {}
+local activeTab = 1
+
+local tabDefs = {
+    {name="ESP",   icon="circle"},
+    {name="Aimbot", icon="target"},
+    {name="Hitbox", icon="box"},
+    {name="Tema",   icon="sliders"},
+    {name="Créditos", icon="info"},
+    {name="Logs",   icon="list"},
+}
+
+local function createTabPage()
+    local page = Instance.new("Frame")
+    page.Size = UDim2.new(1,0,1,0); page.BackgroundTransparency = 1; page.BorderSizePixel = 0
+    page.Visible = false; page.Parent = ContentArea
